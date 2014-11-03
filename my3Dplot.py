@@ -93,9 +93,9 @@ class my3DFig(object):
             print("initCircle:Error: Länge stimmt nicht überein!")
         else:
             for i in mlist:
-                circle = Circle((i[0, 0], i[1, 0]), 1, color="b", alpha=0.5)
+                circle = Circle((i[0], i[1]), 1, color="b", alpha=0.5)
                 self.__ax.add_patch(circle)
-                art3d.pathpatch_2d_to_3d(circle, z=i[2, 0])
+                art3d.pathpatch_2d_to_3d(circle, z=i[2])
             plt.draw()
 
     def update(self):
@@ -108,4 +108,4 @@ class my3DFig(object):
 
     def setLegPos(self, nr, mxyz):
         for i in range(3):
-            self.__xyz[i][nr] = mxyz[i, 0]
+            self.__xyz[i][nr] = mxyz[i]

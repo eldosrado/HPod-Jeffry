@@ -40,7 +40,7 @@ class Robot(object):
 
     def __setStandPos(self):
         self.list = self.walk.getStandPos()
-        self.__sendListToBein(l)
+        self.__sendListToBein()
         tm.sleep(self.steptime)
 
     def __move(self):

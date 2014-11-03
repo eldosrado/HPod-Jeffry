@@ -14,24 +14,20 @@ def main():
             "2 = set Mode\n" \
             "3 = set StepsPerUnit\n"
 
-
-
     r = robot.Robot()
-    #r.go()
-    #exit()
     t = th.Thread(target=r.go)
-    #t.start()
+    t.start()
     i = 1
-    go = False
-    #
+    #go = False
     while i >= 0:
         print(smode)
         try:
-            i =int(input())
+            i = int(input())
         except ValueError as e:
             print(e)
-            t._stop()
+            r.stop()
             exit()
+        """
         if i == 0:
             if go:
                 r.stop()
@@ -42,7 +38,8 @@ def main():
                 t.start()
                 go = True
                 print(go)
-        elif i == 1:
+        """
+        if i == 1:
             print('Gib den neuen Winkel ein: ')
             temp = int(input())
             r.setAngel(temp)

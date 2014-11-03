@@ -44,7 +44,7 @@ class Walk(object):
         self.__HIGHT_MIN = 0.1
         self.__HIGHT_MAX = 0.2
 
-        self.__mode = 1
+        self.__mode = 2
         self.__curmode = -1
         self.__initMode()
 
@@ -87,7 +87,6 @@ class Walk(object):
     def setHigh(self, h):
         self.__h = h
 
-
     def getStartPos(self):
         self.__list = []
         self.__list += [np.array([0, 0, 0])]
@@ -106,55 +105,86 @@ class Walk(object):
         self.__list = []
         angle = self.__angle
 
-        for i in range(self.__spu):
-            self.__list += [array([[cos(angle) * self.__r],
-                                   [sin(angle) * self.__r],
-                                   [0]]) / self.__spu * (i + 1)]
-        for i in range(self.__spu):
-            self.__list += [array([[-cos(angle)] * self.__r,
-                                   [-sin(angle)] * self.__r,
-                                   [self.__h]]) / self.__spu + self.__list[len(self.__list) - 1]]
-        for i in range(self.__spu):
-            self.__list += [array([[-cos(angle)] * self.__r,
-                                   [-sin(angle)] * self.__r,
-                                   [-self.__h]]) / self.__spu + self.__list[len(self.__list) - 1]]
-        for i in range(self.__spu):
-            self.__list += [array([[cos(angle) * self.__r],
-                                   [sin(angle) * self.__r],
-                                   [0]]) / self.__spu + self.__list[len(self.__list) - 1]]
+        x = cos(angle) * self.__r
+        y = sin(angle) * self.__r
+        for i in range(1, self.__spu + 1):
+            v = i / self.__spu
+            self.__list += [array([x, y, 0]) * v]
+
+        for i in range(self.__spu - 1, -1, -1):
+            v = i / self.__spu
+            x = cos(angle) * self.__r * v
+            y = sin(angle) * self.__r * v
+            hyp = ma.sqrt(x**2 + y**2)
+            z = (1 - hyp / self.__r) * self.__h
+            self.__list += [array([x, y, z])]
+
+        for i in range(-1, -self.__spu - 1, -1):
+            v = i / self.__spu
+            x = cos(angle) * self.__r * v
+            y = sin(angle) * self.__r * v
+            hyp = ma.sqrt(x**2 + y**2)
+            z = (1 - hyp / self.__r) * self.__h
+            self.__list += [array([x, y, z])]
+
+        x = cos(angle) * self.__r
+        y = sin(angle) * self.__r
+        for i in range(-self.__spu + 1, 1):
+            v = i / self.__spu
+            self.__list += [array([x, y, 0]) * v]
 
     def __gangRechteck(self):
         self.__list = []
         angle = self.__angle
-        for i in range(self.__spu * 2):
-            self.__list += [array([[cos(angle) * self.__r],
-                                   [sin(angle) * self.__r],
-                                   [0]]) / (self.__spu * 2) * (i + 1)]
+
+        # Anfang: Bodenkontakt
+        # Bewegung nach hinten (Vorwärtsbewegung)
+        x = cos(angle) * self.__r
+        y = sin(angle) * self.__r
+        for i in range(1, self.__spu * 2 + 1):
+            v = i / self.__spu / 2
+            self.__list += [array([x, y, 0]) * v]
+
+        # Bein anheben
         for i in range(self.__spu):
-            self.__list += [array([[0], [0], [self.__h]]) / self.__spu + self.__list[len(self.__list) - 1]]
-        for i in range(self.__spu * 2):
-            self.__list += [array([[-cos(angle) * self.__r],
-                                   [-sin(angle) * self.__r],
-                                   [0]]) / self.__spu + self.__list[len(self.__list) - 1]]
-        for i in range(self.__spu):
-            self.__list += [array([[0], [0], [-self.__h]]) / self.__spu + self.__list[len(self.__list) - 1]]
-        for i in range(self.__spu * 2):
-            self.__list += [array([[cos(angle) * self.__r],
-                                   [sin(angle) * self.__r],
-                                   [0]]) / (self.__spu * 2) + self.__list[len(self.__list) - 1]]
-        for i in self.__list:
-            print(i)
+            v = (i+1) / self.__spu
+            z = self.__h * v
+            self.__list += [array([x, y, z])]
+
+        # Bein in der Luft nach vorne bewegen
+        z = self.__h
+        for i in range(self.__spu - 1, -self.__spu - 1, -1):
+            v = i/self.__spu
+            x = cos(angle) * self.__r * v
+            y = sin(angle) * self.__r * v
+            self.__list += [array([x, y, z])]
+
+        # Bein absetzen
+        x = -cos(angle) * self.__r
+        y = -sin(angle) * self.__r
+        for i in range(self.__spu - 1, -1, -1):
+            v = i / self.__spu
+            z = self.__h * v
+            self.__list += [array([x, y, z])]
+
+        # Bein zur Startposition bewegen
+        x = cos(angle) * self.__r
+        y = sin(angle) * self.__r
+        for i in range(-self.__spu * 2 + 1, 1):
+            v = i / self.__spu / 2
+            self.__list += [array([x, y, 0]) * v]
+
         pass
 
     def __gangParabel(self):
-        self.__list = []
+        self.__list = list()
         angle = self.__angle
 
         x = cos(angle) * self.__r
         y = sin(angle) * self.__r
         for i in range(1, self.__spu + 1):
             v = i / self.__spu
-            self.__list += [array([[x], [y], [0]]) * v]
+            self.__list += [array([x, y, 0]) * v]
 
         for i in range(self.__spu - 1, -self.__spu - 1, -1):
             v = i/self.__spu
@@ -163,17 +193,13 @@ class Walk(object):
             a, b, c = fit_parabel(self.__r, self.__h)
             hyp = ma.sqrt(x**2+y**2)
             z = a*(hyp**2) + b*hyp + c
-            self.__list += [array([[x], [y], [z]])]
+            self.__list += [array([x, y, z])]
 
         x = cos(angle) * self.__r
         y = sin(angle) * self.__r
         for i in range(-self.__spu + 1, 1):
             v = i / self.__spu
-            self.__list += [array([[x], [y], [0]]) * v]
-
-        for i in self.__list:
-            print(i)
-        pass
+            self.__list += [array([x, y, 0]) * v]
 
     def genList(self):
         if self.__mode != self.__curmode or self.__angle != self.__curangle or self.__spu != self.__curspu:

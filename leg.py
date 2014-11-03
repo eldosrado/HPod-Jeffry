@@ -1,26 +1,26 @@
 __author__ = 'Jeka'
 import my3Dplot as mPlt
-from numpy import matrix
+from numpy import array
 
 
 class Leg(object):
     anzahl = 0
 
-    def __init__(self, offset=matrix([[0], [0], [0]])):
+    def __init__(self, offset=array([0, 0, 0])):
         self.nr = Leg.anzahl
         #print(self.nr)
         Leg.anzahl += 1
 
-        self.Pos = matrix([[0], [0], [0]])
-        self.Offset = matrix([[0], [0], [0]])
+        self.Pos = array([0, 0, 0])
+        self.Offset = array([0, 0, 0])
         self.setOff(offset)
         self.Pos = offset
 
-    def setOff(self, offset=matrix([[0], [0], [0]])):
+    def setOff(self, offset=array([0, 0, 0])):
         self.Offset = offset
         self._legPos()
 
-    def setPos(self, Plot3D=None, pos=matrix([[0], [0], [0]])):
+    def setPos(self, Plot3D=None, pos=array([0, 0, 0])):
         self.Pos = pos
         self._legPos(Plot3D)
 
@@ -43,12 +43,12 @@ class Leg(object):
 class Legs(object):
     def __init__(self):
         self.leg = []
-        offset = [matrix([[3], [-2], [-1]]),
-                  matrix([[0], [-3], [-1]]),
-                  matrix([[-3], [-2], [-1]]),
-                  matrix([[-3], [2], [-1]]),
-                  matrix([[0], [3], [-1]]),
-                  matrix([[3], [2], [-1]])]
+        offset = [array([3, -2, -1]),
+                  array([0, -3, -1]),
+                  array([-3, -2, -1]),
+                  array([-3, 2, -1]),
+                  array([0, 3, -1]),
+                  array([3, 2, -1])]
 
         self.P3D = mPlt.my3DFig(6, offset)
         for i in range(6):
@@ -58,7 +58,7 @@ class Legs(object):
         """
         Übergebe einem Bein(nr) eine neue Positzion
         :param nr: Nummer des Bein von 0 bis 5
-        :param pos: neue Position in eine 1x3 Matrix x,y,z
+        :param pos: neue Position in eine 1x3 array x,y,z
         """
         self.leg[nr].setPos(Plot3D=self.P3D, pos=pos)
 
