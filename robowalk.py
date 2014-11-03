@@ -5,14 +5,17 @@ from numpy import matrix, array
 import numpy as np
 
 
+# nur zur abkürzung in der Berechnungsmethode erstellt
 def sin(angle):
     return ma.sin(ma.radians(angle))
 
 
+# nur zur abkürzung in der Berechnungsmethode erstellt
 def cos(angle):
     return ma.cos(ma.radians(angle))
 
 
+# berechnet eine Parabel aus drei Punkten ( 3*x-Punkte, 3*y-Punkte)
 def fit_parabola(x, y):
     """Fits the equation "y = ax^2 + bx + c" given exactly 3 points as two
     lists or arrays of x & y coordinates"""
@@ -24,6 +27,8 @@ def fit_parabola(x, y):
     return a, b, c
 
 
+# Berechnet die a,b,c Werte einer Parabelfunktion y = ax^2 + bx + c aus einer an der Y-Achse gespiegelten Parabel
+# wobei b immer 0 ist. 
 def fit_parabel(r, h):
     A = np.zeros((3, 3), dtype=np.float)
     x = np.array([-r, 0, r])
