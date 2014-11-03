@@ -11,7 +11,6 @@ class Robot(object):
         self.steptime = 0.15
         self.status = 0
         self.bein = Legs()
-        # self.bein = legs()
         self.bein.activate()
         self.walk = Walk()
         self.__go = True
@@ -47,23 +46,29 @@ class Robot(object):
         """
         Fängt an die die gesetzte Richtung zu gehen
         """
-        #tdynam = tm.time()
+        firstHalf = True
         while self.__go:
-            #tdl = []
             tstart = tm.time()
+            steps = 0
             self.list = self.walk.genList()
-            for i in range(len(self.list)):
+
+            if firstHalf:
+                start, stop = 0, int(len(self.list)/2)
+                firstHalf = False
+            else:
+                start, stop = int(len(self.list)/2), len(self.list)
+                firstHalf = True
+
+            for i in range(start, stop):
                 self.__sendListToBein(i)
-                #tdl += [tm.time()-tdynam]
-                td = (self.steptime * (i + 1)) - (tm.time() - tstart)
+                steps += 1
+                td = (self.steptime * steps) - (tm.time() - tstart)
                 if td > 0:
                     tm.sleep(td)
                 else:
                     pass
                     print(td, " Sekunden überschritten!!!")
-                #tdynam = tm.time()
                 self.bein.activate()
-            #self.steptime = max(tdl) * 1.5
 
     def stop(self):
         print('stop')
