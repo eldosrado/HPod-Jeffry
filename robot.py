@@ -11,7 +11,7 @@ class Robot(object):
         self.steptime = 0.15
         self.status = 0
         self.bein = Legs()
-        self.bein.activate()
+        #self.bein.activate()
         self.walk = Walk()
         self.__go = True
 
@@ -70,6 +70,7 @@ class Robot(object):
                 else:
                     pass
                     print(td, " Sekunden überschritten!!!")
+                print(self.bein)
                 self.bein.activate()
 
     # Methode um den Roboter wieder stillstehen zu lassen

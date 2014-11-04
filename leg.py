@@ -1,5 +1,5 @@
 __author__ = 'Jeka'
-import my3Dplot as mPlt
+#import my3Dplot as mPlt
 from numpy import array
 
 
@@ -15,6 +15,9 @@ class Leg(object):
         self.Offset = array([0, 0, 0])
         self.setOff(offset)
         self.Pos = offset
+
+    def getNr(self):
+        return self.nr
 
     def setOff(self, offset=array([0, 0, 0])):
         self.Offset = offset
@@ -33,6 +36,9 @@ class Leg(object):
     def getPos(self):
         return self.legPos
 
+    def getPosAsList(self):
+        return self.legPos.tolist()
+
     def activate(self):
         print(self.nr, "Bein ->", self.Pos)
 
@@ -50,7 +56,14 @@ class Legs(object):
                   array([0, 3, -1]),
                   array([3, 2, -1])]
 
-        self.P3D = mPlt.my3DFig(6, offset)
+        offset = [array([0, 0, 0]),
+                  array([0, 0, 0]),
+                  array([0, 0, 0]),
+                  array([0, 0, 0]),
+                  array([0, 0, 0]),
+                  array([0, 0, 0])]
+
+        #self.P3D = mPlt.my3DFig(6, offset)
         for i in range(6):
             self.leg.append(Leg(offset[i]))
 
@@ -60,19 +73,34 @@ class Legs(object):
         :param nr: Nummer des Bein von 0 bis 5
         :param pos: neue Position in eine 1x3 array x,y,z
         """
-        self.leg[nr].setPos(Plot3D=self.P3D, pos=pos)
+        #self.leg[nr].setPos(Plot3D=self.P3D, pos=pos)
+        self.leg[nr].setPos(pos=pos)
 
     def activate(self):
-        self.P3D.update()
+        #self.P3D.update()
+        temp = ""
+        stringarray = ["+ ",
+                       "x ",
+                       "y ",
+                       "z "]
+        for i in self.leg:
+            stringarray[0] += " B%d   " % i.getNr()
+            for o in range(1, 4):
+                stringarray[o] += "%5.2f " % i.getPosAsList()[o-1]
+        for s in stringarray:
+            temp += s + "\n"
+        return temp
 
     def __str__(self):
-        string = ""
-        for i in range(6):
-            string += "%4d" % i
-        string += "\n"
-        for o in range(3):
-            for i in range(6):
-                string += "%4.1f" % self.leg[i].getPos()[o, 0]
-            string += "\n"
-        return string
-
+        temp = ""
+        stringarray = ["+ ",
+                       "x ",
+                       "y ",
+                       "z "]
+        for i in self.leg:
+            stringarray[0] += " B%d   " % i.getNr()
+            for o in range(1, 4):
+                stringarray[o] += "%5.2f " % i.getPosAsList()[o-1]
+        for s in stringarray:
+            temp += s + "\n"
+        return temp

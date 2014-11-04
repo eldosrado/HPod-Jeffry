@@ -27,18 +27,6 @@ def main():
             print(e)
             r.stop()
             exit()
-        """
-        if i == 0:
-            if go:
-                r.stop()
-                go = False
-                print(go)
-            else:
-                #tgo = th.Thread(target=r.go)
-                t.start()
-                go = True
-                print(go)
-        """
         if i == 1:
             print('Gib den neuen Winkel ein: ')
             temp = int(input())
