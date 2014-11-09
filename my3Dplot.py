@@ -4,9 +4,7 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Circle, PathPatch
 from mpl_toolkits.mplot3d import Axes3D
 import mpl_toolkits.mplot3d.art3d as art3d
-import time
 import numpy as np
-
 
 
 class my3DFig(object):
@@ -16,8 +14,9 @@ class my3DFig(object):
         :param anzahl: Anzahl der Füße
         :param zeroPos: Liste von Koordinaten wo der Bodenkontakt sein soll
         """
-        # Definiert die anzahl der Beine
-        self.__anzahl = anzahl
+        # Definiert die anzahl der
+        self.__anzahl = None
+        self.setAnzahl(anzahl)
 
         # Erstellt ein 2D Plot-Modell(Figur)
         self.__fig = plt.figure()
@@ -26,10 +25,10 @@ class my3DFig(object):
         self.__ax = self.__fig.gca(projection='3d')
 
         # Erstelle eine Puffer-Koordinatenliste
-        self.__xyz = [np.zeros(anzahl), np.zeros(anzahl), np.zeros(anzahl)]
+        self.__xyz = [[0 for o in range(anzahl)] for i in range(3)]
 
         # Setzt die Farbei für die Fuss-Punkte
-        self.__color = ['k'] * self.__anzahl
+        self.__color = ['k'] * anzahl
 
         # Setze die Label und die Grenzen der Koordinatensystems
         self.set_xyzlablim()
@@ -40,7 +39,7 @@ class my3DFig(object):
         # Drehung um die z-Achse und der neuen horizontal zum Sichpunkt schauenden Achse
         self.__ax.view_init(elev=40., azim=45)
 
-        # Erstellt
+        # Erstellt die Punkte
         self.__newPoints = self.__ax.scatter(self.__xyz[0], self.__xyz[1], self.__xyz[2], c=self.__color)
 
         # Läst die Kreise erstellen wenn ihre Positionen verfügbar sind
@@ -68,21 +67,22 @@ class my3DFig(object):
             self.__ax.set_zlabel(llabel[2])
 
         if llimit is None:
-            self.__ax.set_xlim3d(-4, 4)
-            self.__ax.set_ylim3d(-4, 4)
-            self.__ax.set_zlim3d(-3, 1)
+            self.__ax.set_xlim3d(-5, 5)
+            self.__ax.set_ylim3d(-5, 5)
+            self.__ax.set_zlim3d(-5, 5)
         else:
             self.__ax.set_xlim3d(llimit[0])
             self.__ax.set_ylim3d(llimit[1])
             self.__ax.set_zlim3d(llimit[2])
 
+    # Anzahl der Beine setzen
     def setAnzahl(self, anzahl):
         """
         Setzt eine neue anzahl von Beinenspitzen(Punkten)
         :param anzahl: int -> neue Anzahl
         """
         self.__anzahl = anzahl
-        self.__color = ['k'] * anzahl
+        self.__color = ['b'] * anzahl
 
     def initCircle(self, mlist):
         """
@@ -103,9 +103,17 @@ class my3DFig(object):
         Aktualisiere die Punkte auf der Anzeige
         """
         self.__newPoints.remove()
+        # print("__xyz", self.__xyz)
         self.__newPoints = self.__ax.scatter(self.__xyz[0], self.__xyz[1], self.__xyz[2], c=self.__color)
         plt.draw()
 
     def setLegPos(self, nr, mxyz):
-        for i in range(3):
-            self.__xyz[i][nr] = mxyz[i]
+        try:
+            temp = mxyz.tolist()
+        except:
+            temp = mxyz
+
+        if nr < len(self.__xyz[0]):
+            for i in range(3): self.__xyz[i][nr] = temp[i]
+
+

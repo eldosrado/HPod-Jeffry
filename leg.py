@@ -1,5 +1,5 @@
 __author__ = 'Jeka'
-#import my3Dplot as mPlt
+import my3Dplot as mPlt
 from numpy import array
 
 
@@ -48,6 +48,7 @@ class Leg(object):
 
 class Legs(object):
     def __init__(self):
+        self.__plot = True
         self.leg = []
         offset = [array([3, -2, -1]),
                   array([0, -3, -1]),
@@ -56,28 +57,25 @@ class Legs(object):
                   array([0, 3, -1]),
                   array([3, 2, -1])]
 
-        offset = [array([0, 0, 0]),
-                  array([0, 0, 0]),
-                  array([0, 0, 0]),
-                  array([0, 0, 0]),
-                  array([0, 0, 0]),
-                  array([0, 0, 0])]
+        #offset = [array([0, 0, 0]) for i in range(6)]
 
-        #self.P3D = mPlt.my3DFig(6, offset)
+        if self.__plot:self.P3D = mPlt.my3DFig(6, offset)
+
         for i in range(6):
             self.leg.append(Leg(offset[i]))
 
-    def setPos(self, nr, pos):
+    def setPos(self, nr, pos, speed = 0):
         """
         Übergebe einem Bein(nr) eine neue Positzion
         :param nr: Nummer des Bein von 0 bis 5
         :param pos: neue Position in eine 1x3 array x,y,z
         """
-        #self.leg[nr].setPos(Plot3D=self.P3D, pos=pos)
+        if self.__plot: self.leg[nr].setPos(Plot3D=self.P3D, pos=pos)
+
         self.leg[nr].setPos(pos=pos)
 
     def activate(self):
-        #self.P3D.update()
+        if self.__plot: self.P3D.update()
         temp = ""
         stringarray = ["+ ",
                        "x ",

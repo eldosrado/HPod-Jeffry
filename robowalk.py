@@ -15,18 +15,6 @@ def cos(angle):
     return ma.cos(ma.radians(angle))
 
 
-# berechnet eine Parabel aus drei Punkten ( 3*x-Punkte, 3*y-Punkte)
-def fit_parabola(x, y):
-    """Fits the equation "y = ax^2 + bx + c" given exactly 3 points as two
-    lists or arrays of x & y coordinates"""
-    A = np.zeros((3, 3), dtype=np.float)
-    A[:, 0] = x ** 2
-    A[:, 1] = x
-    A[:, 2] = 1
-    a, b, c = np.linalg.solve(A, y)
-    return a, b, c
-
-
 # Berechnet die a,b,c Werte einer Parabelfunktion y = ax^2 + bx + c aus einer an der Y-Achse gespiegelten Parabel
 # wobei b immer 0 ist. 
 def fit_parabel(r, h):
@@ -49,8 +37,9 @@ class Walk(object):
         self.__HIGHT_MIN = 0.1
         self.__HIGHT_MAX = 0.2
 
+        self.__changes = True
+
         self.__mode = 2
-        self.__curmode = -1
         self.__initMode()
 
         self.__angle = 0
@@ -61,7 +50,6 @@ class Walk(object):
         self.__r = 1.
 
         self.__spu = 4
-        self.__curspu = 0
 
         self.__list = []
         self.genList()
@@ -72,38 +60,51 @@ class Walk(object):
                               self.__gangParabel]
 
     def switchMode(self):
-        if self.__mode >= 2:
+        if self.__mode > self.__MODE_MAX:
             self.__mode = 0
         else:
             self.__mode += 1
+        self.__changes = True
 
     def setMode(self, mode=0):
         if self.__MODE_MAX >= mode:
             self.__mode = mode
+        self.__changes = True
         return Walk.modetext[self.__mode]
 
     def setAngle(self, angle):
         self.__angle = -angle
+        self.__changes = True
 
     def setSpu(self, spu):
         if spu > 0:
             self.__spu = spu
+        self.__changes = True
+
+    def incHight(self, diff=0.5):
+        self.__h += diff
+        self.__changes = True
+
+    def decHight(self, diff=0.5):
+        self.__h -= diff
+        self.__changes = True
 
     def setHigh(self, h):
         self.__h = h
+        self.__changes = True
 
     def getStartPos(self):
         self.__list = []
         self.__list += [np.array([0, 0, 0])]
         self.__list += [np.array([0, 0, self.__h])]
-        self.__curmode = -1
+        self.__changes = True
         return self.__list
 
     def getStandPos(self):
         self.__list = []
         self.__list += [np.array([0, 0, 0])]
         self.__list += [np.array([0, 0, 0])]
-        self.__curmode = -1
+        self.__changes = True
         return self.__list
 
     def __gangDreieck(self):
@@ -179,8 +180,6 @@ class Walk(object):
             v = i / self.__spu / 2
             self.__list += [array([x, y, 0]) * v]
 
-        pass
-
     def __gangParabel(self):
         self.__list = list()
         angle = self.__angle
@@ -207,10 +206,8 @@ class Walk(object):
             self.__list += [array([x, y, 0]) * v]
 
     def genList(self):
-        if self.__mode != self.__curmode or self.__angle != self.__curangle or self.__spu != self.__curspu:
-            self.__curmode = self.__mode
-            self.__curangle = self.__angle
-            self.__curspu = self.__spu
+        if self.__changes:
+            self.__changes = False
             self.__modemethode[self.__mode]()
         return self.__list
 

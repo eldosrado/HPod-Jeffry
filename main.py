@@ -6,33 +6,43 @@ import matplotlib.pyplot as plt
 from matplotlib import mlab
 import threading as th
 from time import sleep, time
+from vector import vector
 
 
 def main():
-    smode = "0 = Exit\n" \
+    smode = "Enter = Abbruch\n" \
+            "0 = Start/Stop\n" \
             "1 = set Winkel\n" \
             "2 = set Mode\n" \
             "3 = set StepsPerUnit\n"
 
     r = robot.Robot()
-    t = th.Thread(target=r.go)
+    t = th.Thread(target=r.wakeup)
     t.start()
     i = 1
-    #go = False
+    go = False
     while i >= 0:
         print(smode)
         try:
             i = int(input())
         except ValueError as e:
-            print(e)
             r.stop()
+            r.RobotSleep()
             exit()
-        if i == 1:
+
+        if i == 0:
+            if go:
+                r.stop()
+                go = False
+            else:
+                r.start()
+                go = True
+        elif i == 1:
             print('Gib den neuen Winkel ein: ')
             temp = int(input())
             r.setAngel(temp)
         elif i == 2:
-            print('0=Dreieck-Gang\n1=Rechteckgang\n')
+            print('0=Dreieck-Gang\n1=Rechteckgang\n2=Parabelgang\n')
             temp = int(input())
             r.setMode(temp)
         elif i == 3:
@@ -43,10 +53,10 @@ def main():
 if __name__ == '__main__':
     pass
     main()
-    """
-    ths = []
-    for i in range(10):
-        t = th.Thread(target=test, args=(i,))
-        ths += [t]
-        t.start()
-    """
+
+"""
+v = vector()
+v2 = vector(5, 5, 5)
+print(v2.length())
+print(v2.length2())
+"""
