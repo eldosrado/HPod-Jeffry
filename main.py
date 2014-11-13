@@ -21,6 +21,7 @@ def main():
     t.start()
     i = 1
     go = False
+    # Konsolen abfrage
     while i >= 0:
         print(smode)
         try:
