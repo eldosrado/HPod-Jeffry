@@ -53,6 +53,9 @@ class vector(object):
     def as_list(self):
         return [self.x, self.y, self.z]
 
+    def tolist(self):
+        return [self.x, self.y, self.z]
+
     def as_dictionary(self):
         return {'x': self.x, 'y': self.y, 'z': self.z}
 
