@@ -131,7 +131,7 @@ class vector(object):
         else:
             return vector(self.x - v, self.y - v, self.z - v)
 
-    def __div__(self, v):
+    def __truediv__(self, v):
         if isinstance(v, vector):
             return vector(self.x / v.x, self.y / v.y, self.z / v.z)
         else:
