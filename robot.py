@@ -2,31 +2,35 @@ import time as tm
 from leg import *
 import numpy as np
 import math as ma
-from robowalk import *
+from gaitEngine import *
 
 
 class Robot(object):
     def __init__(self):
-        self.list = []
+        # Platzhalter für die Gangliste
+        self.__list = []
+        # Listenlänge
+        self.__list_lenth = 0
+        # Zyklus Zeit
         self.steptime = 0.15
-        self.status = 0
-        self.bein = Legs()
-        self.walk = Walk()
+
+        self.__bein = Legs()
+        self.walk = GaitEngine()
         self.__go = False
         self.__wakeup = True
 
     # Sendet die Liste an die Beinpaare
     def __sendListToBein(self, i=0):
         for o in range(0, 6, 2):
-            self.bein.setPos(o, self.list[i])
+            self.__bein.setPos(o, self.__list[i])
 
-        alt = int(len(self.list) / 2)
-        if i >= len(self.list) / 2:
+        alt = int(len(self.__list) / 2)
+        if i >= len(self.__list) / 2:
             i -= alt
         else:
             i += alt
         for o in range(1, 6, 2):
-            self.bein.setPos(o, self.list[i])
+            self.__bein.setPos(o, self.__list[i])
 
     # Roboters Hauptschleife
     def wakeup(self):
@@ -45,43 +49,47 @@ class Robot(object):
 
     # Beretet sich vor um loszugehen // Hebt eine Beingruppe an
     def __setGoPos(self):
-        self.list = self.walk.getStartPos()
+        self.__list = self.walk.getStartPos()
         self.__sendListToBein()
         tm.sleep(1)
-        self.bein.activate()
+        self.__bein.activate()
 
     # Stellt sich wieder in die ausgangposition hin // Senkt alle Beine
     def __setStandPos(self):
-        self.list = self.walk.getStandPos()
+        self.__list = self.walk.getStandPos()
         self.__sendListToBein()
         tm.sleep(1)
-        self.bein.activate()
+        self.__bein.activate()
 
     # Führt den eigentlichen Gang aus
     def __move(self):
         firstHalf = True
         while self.__go:
-            tstart = tm.time()
-            steps = 0
-            self.list = self.walk.genList()
+            # Startezeit aufnehmen
+            t_start = tm.time()
+            cycle = 0
+            self.__list, self.__list_lenth = self.walk.genList()
 
             # Unterscheiden Welche Beingruppe sich oben befindet
             if firstHalf:
-                start, stop = 0, int(len(self.list)/2)
+                start, stop = 0, int(self.__list_lenth/2)
                 firstHalf = False
             else:
-                start, stop = int(len(self.list)/2), len(self.list)
+                start, stop = int(self.__list_lenth/2), self.__list_lenth
                 firstHalf = True
 
             for i in range(start, stop):
+                # Sendet die Beinliste
                 self.__sendListToBein(i)
-                steps += 1
-                td = (self.steptime * steps) - (tm.time() - tstart)
-                if td > 0:
-                    tm.sleep(td)
-                else:
-                    print(td, " Sekunden überschritten!!!")
-                self.bein.activate()
+                # Zyklus inkrement
+                cycle += 1
+                # Berechnung der restlichen Zykluszeit
+                t_sleep = (self.steptime * cycle) - (tm.time() - t_start)
+
+                if t_sleep > 0:
+                    tm.sleep(t_sleep)
+                # Broadcast zum start der Bewegung der Servos
+                self.__bein.activate()
 
     # Methode um den Roboter wieder stillstehen zu lassen
     def stop(self):

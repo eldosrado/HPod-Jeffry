@@ -3,6 +3,7 @@ __author__ = 'Jeka'
 import math as ma
 from numpy import matrix, array
 import numpy as np
+import vector
 
 
 # nur zur abkürzung in der Berechnungsmethode erstellt
@@ -28,19 +29,24 @@ def fit_parabel(r, h):
     return a, b, c
 
 
-class Walk(object):
+class GaitEngine(object):
     modetext = ["Dreieck", "Recheck", "Parabel"]
 
     def __init__(self):
+        # Ein paar Standartparameter
         self.__MODE_MIN = 0
         self.__MODE_MAX = 2
         self.__HIGHT_MIN = 0.1
         self.__HIGHT_MAX = 0.2
 
+        # Variable zur Erkennung für Änderungen
         self.__changes = True
 
         self.__mode = 2
-        self.__initMode()
+        # Setzte die Adresse für die Gangart
+        self.__modemethode = [self.__gangDreieck,
+                              self.__gangRechteck,
+                              self.__gangParabel]
 
         self.__angle = 0
         self.setAngle(0)
@@ -54,11 +60,6 @@ class Walk(object):
         self.__list = []
         self.genList()
 
-    def __initMode(self):
-        self.__modemethode = [self.__gangDreieck,
-                              self.__gangRechteck,
-                              self.__gangParabel]
-
     def switchMode(self):
         if self.__mode > self.__MODE_MAX:
             self.__mode = 0
@@ -70,29 +71,34 @@ class Walk(object):
         if self.__MODE_MAX >= mode:
             self.__mode = mode
         self.__changes = True
-        return Walk.modetext[self.__mode]
+        return GaitEngine.modetext[self.__mode]
 
     def setAngle(self, angle):
         self.__angle = -angle
         self.__changes = True
 
+    # Setze Stepps per Unit
     def setSpu(self, spu):
         if spu > 0:
             self.__spu = spu
         self.__changes = True
 
+    # Erhöhe die Fushebehöhe
     def incHight(self, diff=0.5):
         self.__h += diff
         self.__changes = True
 
+    # Verringere die Fußhebehöhe
     def decHight(self, diff=0.5):
         self.__h -= diff
         self.__changes = True
 
+    # Setze der Fußhebehöhe ein bestimmten wert
     def setHigh(self, h):
         self.__h = h
         self.__changes = True
 
+    # Erstellt eine Liste für von der der Roboter dann starten kann zu gehen
     def getStartPos(self):
         self.__list = []
         self.__list += [np.array([0, 0, 0])]
@@ -100,6 +106,7 @@ class Walk(object):
         self.__changes = True
         return self.__list
 
+    # Erstellt einel Liste mit allen Fußpositionen auf dem Boden
     def getStandPos(self):
         self.__list = []
         self.__list += [np.array([0, 0, 0])]
@@ -107,6 +114,7 @@ class Walk(object):
         self.__changes = True
         return self.__list
 
+    # Erstellt eine Gangliste mit Dreieckbewegung
     def __gangDreieck(self):
         self.__list = []
         angle = self.__angle
@@ -209,7 +217,7 @@ class Walk(object):
         if self.__changes:
             self.__changes = False
             self.__modemethode[self.__mode]()
-        return self.__list
+        return self.__list, len(self.__list)
 
     def getList(self):
         return self.__list

@@ -21,8 +21,10 @@ class my3DFig(object):
         # Erstellt ein 2D Plot-Modell(Figur)
         self.__fig = plt.figure()
 
+
         # Setzt es zu einem 3D Plot-Modell(Figur)
         self.__ax = self.__fig.gca(projection='3d')
+
 
         # Erstelle eine Puffer-Koordinatenliste
         self.__xyz = [[0 for o in range(anzahl)] for i in range(3)]
@@ -69,7 +71,7 @@ class my3DFig(object):
         if llimit is None:
             self.__ax.set_xlim3d(-5, 5)
             self.__ax.set_ylim3d(-5, 5)
-            self.__ax.set_zlim3d(-5, 5)
+            self.__ax.set_zlim3d(-1, 4)
         else:
             self.__ax.set_xlim3d(llimit[0])
             self.__ax.set_ylim3d(llimit[1])
@@ -115,5 +117,6 @@ class my3DFig(object):
 
         if nr < len(self.__xyz[0]):
             for i in range(3): self.__xyz[i][nr] = temp[i]
+
 
 

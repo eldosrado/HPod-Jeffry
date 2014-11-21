@@ -54,10 +54,3 @@ def main():
 if __name__ == '__main__':
     pass
     main()
-
-"""
-v = vector()
-v2 = vector(5, 5, 5)
-print(v2.length())
-print(v2.length2())
-"""
