@@ -125,24 +125,32 @@ class vector(object):
     def __add__(self, v):
         if isinstance(v, vector):
             return vector(self.x + v.x, self.y + v.y, self.z + v.z)
+        elif isinstance(v, numpy.ndarray) and v.shape == (3,):
+            return vector(self.x + v[0], self.y + v[1], self.z + v[2])
         else:
             return vector(self.x + v, self.y + v, self.z + v)
 
     def __sub__(self, v):
         if isinstance(v, vector):
             return vector(self.x - v.x, self.y - v.y, self.z - v.z)
+        elif isinstance(v, numpy.ndarray) and v.shape == (3,):
+            return vector(self.x - v[0], self.y - v[1], self.z - v[2])
         else:
             return vector(self.x - v, self.y - v, self.z - v)
 
     def __truediv__(self, v):
         if isinstance(v, vector):
             return vector(self.x / v.x, self.y / v.y, self.z / v.z)
+        elif isinstance(v, numpy.ndarray) and v.shape == (3,):
+            return vector(self.x / v[0], self.y / v[1], self.z / v[2])
         else:
             return vector(self.x / v, self.y / v, self.z / v)
 
     def __mul__(self, v):
         if isinstance(v, vector):
             return vector(self.x * v.x, self.y * v.y, self.z * v.z)
+        elif isinstance(v, numpy.ndarray) and v.shape == (3,):
+            return vector(self.x * v[0], self.y * v[1], self.z * v[2])
         else:
             return vector(self.x * v, self.y * v, self.z * v)
 
