@@ -1,4 +1,5 @@
 import math
+import numpy
 
 
 class vector(object):
@@ -43,11 +44,8 @@ class vector(object):
     def length(self):
         return math.sqrt((self.x**2) + (self.y**2) + (self.z**2))
 
-    def length2(self):
-        return math.sqrt((self.x**2) + (self.y**2) + (self.z**2))
-
     def length_squared(self):
-        return ((self.x * self.x) + (self.y * self.y) + (self.z * self.z))
+        return (self.x * self.x) + (self.y * self.y) + (self.z * self.z)
 
     def as_tuple(self):
         return (self.x, self.y, self.z)
@@ -57,6 +55,12 @@ class vector(object):
 
     def as_dictionary(self):
         return {'x': self.x, 'y': self.y, 'z': self.z}
+
+    def as_np_array(self):
+        return numpy.array([self.x, self.y, self.z])
+
+    def as_np_matrix(self):
+        return numpy.matrix([self.x, self.y, self.z])
 
         # # Overloads ##
 
