@@ -3,7 +3,8 @@ __author__ = 'Jeka'
 import math as ma
 from numpy import matrix, array
 import numpy as np
-import vector
+from vector import vector
+from copy import copy
 
 
 # nur zur abkürzung in der Berechnungsmethode erstellt
@@ -114,6 +115,45 @@ class GaitEngine(object):
         self.__changes = True
         return self.__list
 
+    # Komprimierter Code zur Erstellung der Gangpunkte für den Dreiecksgang
+    def __gangDreieck_vec(self):
+        liste = [vector()]
+        angle = self.__angle
+
+        x = cos(angle) * self.__r
+        y = sin(angle) * self.__r
+        z = self.__h
+
+        """
+        # Erstellt ein Vector mit dem die Punkte dann besimmt werden
+        vec = vector(x, y, 0) / self.__spu
+        # Erstellt von der Anfangsposition(auf dem Boden) zwischenpunkte zur hinteren Eckposition
+        [liste.append(vec + liste[-1]) for i in range(self.__spu)]
+
+        vec = vector(-x, -y, z) / self.__spu
+        [liste.append(vec + liste[-1]) for i in range(self.__spu)]
+
+        vec = vector(-x, -y, -z) / self.__spu
+        [liste.append(vec + liste[-1]) for i in range(self.__spu)]
+
+        vec = vector(x, y, 0) / self.__spu
+        [liste.append(vec + liste[-1]) for i in range(self.__spu)]
+        """
+        ######
+        # Nochmal der gleiche Code aber etwas verkürztz
+        ######
+        # Liste mit aus allen benötigten Vektoren
+        vecs = [vector(x, y, 0),
+                vector(-x, -y, z),
+                vector(-x, -y, -z),
+                vector(x, y, 0)]
+
+        for v in vecs:
+            vec = v / self.__spu
+            [liste.append(vec + liste[-1]) for i in range(self.__spu)]
+
+        self.__list = copy(liste[1:])
+
     # Erstellt eine Gangliste mit Dreieckbewegung
     def __gangDreieck(self):
         self.__list = []
@@ -147,6 +187,35 @@ class GaitEngine(object):
             v = i / self.__spu
             self.__list += [array([x, y, 0]) * v]
 
+    # Komprimierter Code zur Erstellung der Gangpunkte für den Rechteckgang
+    def __gangRechteck_vec(self):
+        liste = [vector()]
+        angle = self.__angle
+
+        x = cos(angle) * self.__r
+        y = sin(angle) * self.__r
+        z = self.__h
+
+        vec_ground = vector(x, y, 0)
+        vecs = [vector(0, 0, z),
+                vector(-x, -y, 0),
+                vector(-x, -y, 0),
+                vector(0, 0, -z)]
+
+        # Listenerstellung der Gangpositionen vom x=y=z=0 bei Bodenkontakt
+        [liste.append(vec_ground / self.__spu + liste[-1]) for i in range(self.__spu * 2)]
+
+        # Listenerstellung der Gangpositionen ohne Bodenkontakt
+        for v in vecs:
+            vec = v / self.__spu
+            [liste.append(vec + liste[-1]) for i in range(self.__spu)]
+
+        # Listenerstellung der Gangpositionen zur Position x=y=z=0 bei Bodenkontakt
+        [liste.append(vec_ground / self.__spu + liste[-1]) for i in range(self.__spu * 2)]
+
+        self.__list = copy(liste[1:])
+
+    # Erstellt eine Gangliste mit Dreieckbewegung
     def __gangRechteck(self):
         self.__list = []
         angle = self.__angle
@@ -188,20 +257,43 @@ class GaitEngine(object):
             v = i / self.__spu / 2
             self.__list += [array([x, y, 0]) * v]
 
+    # Komprimierter Code zur Erstellung der Gangpunkte für den Parabelgang
+    def __gangParabel_vec(self):
+        liste = [vector()]
+        angle = self.__angle
+
+        x_max = cos(angle) * self.__r
+        y_max = sin(angle) * self.__r
+
+        vec = vector(x_max, y_max, 0) / self.__spu
+        [liste.append(vec + liste[-1]) for i in range(self.__spu)]
+
+        for i in range(self.__spu - 1, -self.__spu - 1, -1):
+            v = i/self.__spu
+            x = x_max * v
+            y = y_max * v
+            a, b, c = fit_parabel(self.__r, self.__h)
+            hyp = ma.sqrt(x**2+y**2)
+            z = a*(hyp**2) + b*hyp + c
+            liste.append(vector(x, y, z))
+
+        [liste.append(vec + liste[-1]) for i in range(self.__spu)]
+
     def __gangParabel(self):
         self.__list = list()
         angle = self.__angle
 
-        x = cos(angle) * self.__r
-        y = sin(angle) * self.__r
+        x_max = cos(angle) * self.__r
+        y_max = sin(angle) * self.__r
+
         for i in range(1, self.__spu + 1):
             v = i / self.__spu
-            self.__list += [array([x, y, 0]) * v]
+            self.__list += [array([x_max, y_max, 0]) * v]
 
         for i in range(self.__spu - 1, -self.__spu - 1, -1):
             v = i/self.__spu
-            x = cos(angle) * self.__r * v
-            y = sin(angle) * self.__r * v
+            x = x_max * v
+            y = y_max * v
             a, b, c = fit_parabel(self.__r, self.__h)
             hyp = ma.sqrt(x**2+y**2)
             z = a*(hyp**2) + b*hyp + c
