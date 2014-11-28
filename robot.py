@@ -12,10 +12,10 @@ class Robot(object):
         # Listenlänge
         self.__list_lenth = 0
         # Zyklus Zeit
-        self.steptime = 0.15
+        self.__steptime = 0.15
 
         self.__bein = Legs()
-        self.walk = GaitEngine()
+        self.__walk = GaitEngine()
         self.__go = False
         self.__wakeup = True
 
@@ -49,14 +49,14 @@ class Robot(object):
 
     # Beretet sich vor um loszugehen // Hebt eine Beingruppe an
     def __setGoPos(self):
-        self.__list = self.walk.getStartPos()
+        self.__list = self.__walk.getStartPos()
         self.__sendListToBein()
         tm.sleep(1)
         self.__bein.activate()
 
     # Stellt sich wieder in die ausgangposition hin // Senkt alle Beine
     def __setStandPos(self):
-        self.__list = self.walk.getStandPos()
+        self.__list = self.__walk.getStandPos()
         self.__sendListToBein()
         tm.sleep(1)
         self.__bein.activate()
@@ -68,7 +68,7 @@ class Robot(object):
             # Startezeit aufnehmen
             t_start = tm.time()
             cycle = 0
-            self.__list, self.__list_lenth = self.walk.genList()
+            self.__list, self.__list_lenth = self.__walk.genList()
 
             # Unterscheiden Welche Beingruppe sich oben befindet
             if firstHalf:
@@ -84,7 +84,7 @@ class Robot(object):
                 # Zyklus inkrement
                 cycle += 1
                 # Berechnung der restlichen Zykluszeit
-                t_sleep = (self.steptime * cycle) - (tm.time() - t_start)
+                t_sleep = (self.__steptime * cycle) - (tm.time() - t_start)
 
                 if t_sleep > 0:
                     tm.sleep(t_sleep)
@@ -103,7 +103,7 @@ class Robot(object):
 
     # Winkel in welche richtung der Roboter sich bewegen soll
     def setAngel(self, angel):
-        self.walk.setAngle(angel)
+        self.__walk.setAngle(angel)
         print("Winkel gesetzt zu:", angel)
 
     # Setzt ein Gangmodus
@@ -111,16 +111,16 @@ class Robot(object):
     # 1 = Rechteck
     # 2 = Parabel
     def setMode(self, mode):
-        modetext = self.walk.setMode(mode)
+        modetext = self.__walk.setMode(mode)
         print("Geheform gesetzt zu:", modetext)
 
     # Ändert den Gangmode zu dem Nächsten
     def switchMode(self):
-        self.walk.switchMode()
+        self.__walk.switchMode()
 
     # Setzt die Anzahl der zwischenpunkte bei der Gangbewegung
     def setSpu(self, spu):
-        self.walk.setSpu(spu)
+        self.__walk.setSpu(spu)
         print("steps per unit gesetzt zu:", spu)
 
     # Beendet das komplete Roboterporgramm

@@ -31,7 +31,6 @@ class Leg(object):
         self.legPos = self.Pos + self.Offset
         if Plot3D is not None:
             Plot3D.setLegPos(self.nr, self.legPos)
-            # mPlt.setLegPos(self.nr, self.legPos)
 
     def getPos(self):
         return self.legPos
@@ -57,9 +56,13 @@ class Legs(object):
                   array([0, 3, -1]),
                   array([3, 2, -1])]
 
-        #offset = [array([0, 0, 0]) for i in range(6)]
-
-        if self.__plot:self.P3D = mPlt.my3DFig(6, offset)
+        if self.__plot:
+            debug = False
+            if not debug:
+                self.P3D = mPlt.my3DFig(6, offset)
+            else:
+                self.P3D = mPlt.my3DFig_th(6, offset)
+                self.P3D.start()
 
         for i in range(6):
             self.leg.append(Leg(offset[i]))
@@ -70,7 +73,8 @@ class Legs(object):
         :param nr: Nummer des Bein von 0 bis 5
         :param pos: neue Position in eine 1x3 array x,y,z
         """
-        if self.__plot: self.leg[nr].setPos(Plot3D=self.P3D, pos=pos)
+        if self.__plot:
+            self.leg[nr].setPos(Plot3D=self.P3D, pos=pos)
 
         self.leg[nr].setPos(pos=pos)
 
