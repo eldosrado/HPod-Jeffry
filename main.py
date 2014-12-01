@@ -10,6 +10,9 @@ from vector import vector
 
 
 def main():
+    """ main-Test_funktion zum testen der Roboter_Klasse
+
+    """
     smode = "Enter = Abbruch\n" \
             "0 = Start/Stop\n" \
             "1 = set Winkel\n" \
@@ -27,6 +30,7 @@ def main():
         try:
             i = int(input())
         except ValueError as e:
+            print(e)
             r.stop()
             r.RobotSleep()
             exit()
@@ -41,7 +45,7 @@ def main():
         elif i == 1:
             print('Gib den neuen Winkel ein: ')
             temp = int(input())
-            r.setAngel(temp)
+            r.setAngle(temp)
         elif i == 2:
             print('0=Dreieck-Gang\n1=Rechteckgang\n2=Parabelgang\n')
             temp = int(input())
@@ -52,5 +56,4 @@ def main():
             r.setSpu(temp)
 
 if __name__ == '__main__':
-    pass
     main()

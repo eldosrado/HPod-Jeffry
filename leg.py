@@ -5,104 +5,42 @@ from numpy import array
 
 class Leg(object):
     anzahl = 0
+    M3P = None
 
     def __init__(self, offset=array([0, 0, 0])):
-        self.nr = Leg.anzahl
-        #print(self.nr)
+        self.__nr = Leg.anzahl
         Leg.anzahl += 1
 
-        self.Pos = array([0, 0, 0])
-        self.Offset = array([0, 0, 0])
-        self.setOff(offset)
-        self.Pos = offset
+        self.__pos_offset = offset
+        self.__pos = offset
+        self.__legPos = None
+        self.__calc_legPos()
 
     def getNr(self):
-        return self.nr
+        return self.__nr
 
     def setOff(self, offset=array([0, 0, 0])):
-        self.Offset = offset
-        self._legPos()
+        self.__pos_offset = offset
+        self.__calc_legPos()
 
-    def setPos(self, Plot3D=None, pos=array([0, 0, 0])):
-        self.Pos = pos
-        self._legPos(Plot3D)
+    def setPos(self, pos=array([0, 0, 0]), Plot3D=None, speed=0.15):
+        self.__pos = pos
+        self.__calc_legPos(Plot3D)
 
-    def _legPos(self, Plot3D=None):
-        self.legPos = self.Pos + self.Offset
+    def __calc_legPos(self, Plot3D=None, speed=0.15):
+        self.__legPos = self.__pos + self.__pos_offset
         if Plot3D is not None:
-            Plot3D.setLegPos(self.nr, self.legPos)
+            Plot3D.setLegPos(self.__nr, self.__legPos)
 
     def getPos(self):
-        return self.legPos
+        return self.__legPos
 
     def getPosAsList(self):
-        return self.legPos.tolist()
+        return self.__legPos.tolist()
 
-    def activate(self):
-        print(self.nr, "Bein ->", self.Pos)
-
-    def __str__(self):
-        return 'leg%d %2f %2d %2d' % (self.nr, self.Pos[0, 0], self.Pos[1, 0], self.Pos[2, 0])
-
-
-class Legs(object):
-    def __init__(self):
-        self.__plot = True
-        self.leg = []
-        offset = [array([3, -2, -1]),
-                  array([0, -3, -1]),
-                  array([-3, -2, -1]),
-                  array([-3, 2, -1]),
-                  array([0, 3, -1]),
-                  array([3, 2, -1])]
-
-        if self.__plot:
-            debug = False
-            if not debug:
-                self.P3D = mPlt.my3DFig(6, offset)
-            else:
-                self.P3D = mPlt.my3DFig_th(6, offset)
-                self.P3D.start()
-
-        for i in range(6):
-            self.leg.append(Leg(offset[i]))
-
-    def setPos(self, nr, pos, speed = 0):
-        """
-        Übergebe einem Bein(nr) eine neue Positzion
-        :param nr: Nummer des Bein von 0 bis 5
-        :param pos: neue Position in eine 1x3 array x,y,z
-        """
-        if self.__plot:
-            self.leg[nr].setPos(Plot3D=self.P3D, pos=pos)
-
-        self.leg[nr].setPos(pos=pos)
-
-    def activate(self):
-        if self.__plot: self.P3D.update()
-        temp = ""
-        stringarray = ["+ ",
-                       "x ",
-                       "y ",
-                       "z "]
-        for i in self.leg:
-            stringarray[0] += " B%d   " % i.getNr()
-            for o in range(1, 4):
-                stringarray[o] += "%5.2f " % i.getPosAsList()[o-1]
-        for s in stringarray:
-            temp += s + "\n"
-        return temp
-
-    def __str__(self):
-        temp = ""
-        stringarray = ["+ ",
-                       "x ",
-                       "y ",
-                       "z "]
-        for i in self.leg:
-            stringarray[0] += " B%d   " % i.getNr()
-            for o in range(1, 4):
-                stringarray[o] += "%5.2f " % i.getPosAsList()[o-1]
-        for s in stringarray:
-            temp += s + "\n"
-        return temp
+    @staticmethod
+    def activate(my3DPlot=None):
+        if Leg.M3P is not None:
+            Leg.M3P.update()
+        elif my3DPlot is not None:
+            my3DPlot.update()

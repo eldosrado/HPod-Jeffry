@@ -61,6 +61,12 @@ class my3DFig_th(threading.Thread):
         my3DFig_th.lock.release()
 
     def set_xyzlablim(self, llabel=None, llimit=None):
+        """ setzt die Label und die Achsen minima und maxima
+
+        :param llabel: Liste von Strings
+        :param llimit: Liste von minima und maxima für alle x,y,z-Achen
+        :return:
+        """
         if llabel is None:
             self.__ax.set_xlabel('x->')
             self.__ax.set_ylabel('y->')
@@ -81,13 +87,17 @@ class my3DFig_th(threading.Thread):
 
     # Anzahl der Beine setzen
     def set_anzahl(self, n):
+        """ Anzahl der Punkte setzen
+
+        :param n: Anzahl der Punkte setzen
+        """
         self.__p_anzahl = n
         self.__p_color = ['b'] * n
 
     def initCircle(self, mlist):
-        """
-        Funktion sur berechnung und Positionierung der Kreise in dem 3D-Plot
-        :param mlist: ?????
+        """ Funktion zur berechnung und Positionierung der Kreise in dem 3D-Plot
+
+        :param mlist:
         """
         if len(mlist) != self.__p_anzahl:
             print("initCircle:Error: Länge stimmt nicht überein!")
@@ -103,32 +113,38 @@ class my3DFig_th(threading.Thread):
         while True:
             if tm.time() > self.__t_end and arrived is not True:
                 self.__newPoints.remove()
-                self.__newPoints = self.__ax.scatter(self.__xyz_ziel[0], self.__xyz_ziel[1], self.__xyz_ziel[2], c=self.__p_color)
+                self.__newPoints = self.__ax.scatter(self.__xyz_ziel[0],
+                                                     self.__xyz_ziel[1],
+                                                     self.__xyz_ziel[2],
+                                                     c=self.__p_color)
                 plt.draw()
                 arrived = True
             elif tm.time() < self.__t_end and arrived is True:
-                self.__t_start = tm.time()
+                #self.__t_start = tm.time()
                 arrived = False
 
             if arrived is not True:
-                t = (self.__t_end - self.__t_start) / self.__t_step
+                t = (tm.time() - self.__t_start) / self.__t_step
+                # t - s
                 for i in range(self.__p_anzahl):
                     for o in range(3):
-                        self.__xyz_temp[o][i] = (self.__xyz_ziel[o][i] * t) + (1. - t) * self.__xyz_start[o][i]
+                        self.__xyz_temp[o][i] = ((self.__xyz_ziel[o][i] - self.__xyz_start[o][i]) * t) + self.__xyz_start[o][i]
 
                 self.__newPoints.remove()
-                #self.__ax.scatter(self.__xyz_temp[0], self.__xyz_temp[1], self.__xyz_temp[2], c=self.__p_color)
-                self.__newPoints = self.__ax.scatter(self.__xyz_temp[0], self.__xyz_temp[1], self.__xyz_temp[2], c=self.__p_color)
+                self.__newPoints = self.__ax.scatter(self.__xyz_temp[0],
+                                                     self.__xyz_temp[1],
+                                                     self.__xyz_temp[2],
+                                                     c=self.__p_color)
                 plt.draw()
-            #tm.sleep(0.001)
+                tm.sleep(0.01)
 
     def update(self):
         my3DFig_th.lock.acquire()
         self.__xyz_start = copy(self.__xyz_temp)
         self.__xyz_ziel = copy(self.__xyz_reg_ziel)
+        self.__t_start = tm.time()
         self.__t_end = tm.time() + self.__t_step
         my3DFig_th.lock.release()
-
 
     def setLegPos(self, nr, xyz):
         try:
@@ -253,6 +269,3 @@ class my3DFig(object):
 
         if nr < len(self.__xyz[0]):
             for i in range(3): self.__xyz[i][nr] = temp[i]
-
-
-
