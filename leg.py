@@ -1,5 +1,8 @@
 __author__ = 'Jeka'
-import my3Dplot as mPlt
+try:
+    import my3Dplot as mPlt
+except:
+    pass
 from numpy import array
 
 

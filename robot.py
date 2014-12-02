@@ -6,7 +6,7 @@ from gaitEngine import *
 
 
 class Robot(object):
-    def __init__(self):
+    def __init__(self, plot=False):
         # Platzhalter für die Gangliste
         self.__list = []
         # Listenlänge
@@ -14,7 +14,7 @@ class Robot(object):
         # Zyklus Zeit
         self.__steptime = 0.15
 
-        self.__plot = True
+        self.__plot = plot
         self.__legs = []
         offset = [array([3, -2, -1]),
                   array([0, -3, -1]),
@@ -31,6 +31,8 @@ class Robot(object):
             else:
                 self.P3D = mPlt.my3DFig_th(6, offset)
                 self.P3D.start()
+        else:
+            self.P3D = None
 
         for i in range(6):
             self.__legs.append(Leg(offset[i]))
